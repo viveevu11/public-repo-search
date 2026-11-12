@@ -66,7 +66,7 @@ function App() {
         <p>Search public GitHub repositories</p>
       </header>
       <form role="search" onSubmit={handleSubmit}>
-        <label htmlFor='repository-search'>Repository Search</label>
+        <label htmlFor='repository-search'>Search Repositories</label>
         <div className="search-controls">
         <input 
           id='repository-search' 
@@ -76,17 +76,23 @@ function App() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
-        <button type='submit'>Search</button>
+        <button type="submit" disabled={status === "loading"}>
+          {status === "loading" ? "Searching…" : "Search"}
+        </button>
         </div>
       </form>
-      <section className="results-section" aria-labelledby="results-heading">
+      <section className="results-section" aria-labelledby="results-heading" aria-busy={status === "loading"}>
         <h2 id="results-heading">Search results</h2>
         {status === "idle" && (
           <p>Enter a keyword to search public repositories.</p>
         )}
 
         {status === "loading" && (
-          <p>Searching GitHub repositories…</p>
+          <div className="status-message loading-message" role="status">
+          <div className="loading-spinner" aria-hidden="true"></div>
+          <h3>Searching repositories</h3>
+          <p>Please wait while GitHub returns the results.</p>
+        </div>
         )}
         {status === "error" && (
           <div className="status-message error-message" role="alert">
@@ -98,7 +104,7 @@ function App() {
           </div>
         )}
         {status === "success" && repositories.length === 0 && (
-          <div className="status-message empty-message">
+          <div className="status-message empty-message" role='status'>
             <h3>No repositories found</h3>
             <p>
               No public repositories matched “{searchedQuery}.” Try a different
